@@ -13,40 +13,69 @@ import {
 } from 'react-native';
 
 class GeoQuest extends Component {
+  state = {
+    lastPosition: {}
+  };
+
+  watchID: ?number = null;
+
+  componentDidMount() {
+    this.watchID = navigator.geolocation.watchPosition(
+      (position) => {
+        var lastPosition = position;
+        this.setState({lastPosition});
+      },
+      (error) => alert(JSON.stringify(error)),
+      {
+        enableHighAccuracy: true,
+        distanceFilter: 5, //need to try less value 
+        timeout: 10000, //show question on the center
+        maximumAge: 500 //need to try less value
+      }
+    );
+  }
+
+  componentWillUnmount() {
+    navigator.geolocation.clearWatch(this.watchID);
+  }
+
   render() {
+    const {coords, timestamp} = this.state.lastPosition;
+
+    let timeInfo;
+    if(timestamp){
+      const date = `Date: ${(new Date(timestamp))}`
+      timeInfo = (<Text>{ date }</Text>);
+    }else{
+      timeInfo = (<Text>No date</Text>);
+    }
+
+    let currentInfo;
+    if(coords){
+      currentInfo = Object.keys(coords).map(name => (
+        <Text key={name}>{name}: {coords[name]}</Text>
+      ))
+    }else{
+      currentInfo = (<Text>Waiting for info</Text>)
+    }
+
     return (
-      <View style={styles.container}>
-        <Text style={styles.welcome}>
-          Welcome to React Native!
-        </Text>
-        <Text style={styles.instructions}>
-          To get started, edit index.android.js
-        </Text>
-        <Text style={styles.instructions}>
-          Double tap R on your keyboard to reload,{'\n'}
-          Shake or press menu button for dev menu
-        </Text>
+      <View> 
+        <Text>Version: 0.0.2</Text>
+        <View>
+          { timeInfo }
+        </View>
+        <View>
+          { currentInfo }
+        </View>
       </View>
     );
   }
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#F5FCFF',
-  },
-  welcome: {
-    fontSize: 20,
-    textAlign: 'center',
-    margin: 10,
-  },
-  instructions: {
-    textAlign: 'center',
-    color: '#333333',
-    marginBottom: 5,
+  title: {
+    fontWeight: '500',
   },
 });
 
