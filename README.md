@@ -1,14 +1,20 @@
 README.md
 
-Стадия MVP
-	1. отображение текущих координат
-	2. круглая область
-	3. отображение стрелки по центру
-	4. буквы сторон света
-	5. генерация псевдоцелей вокруг при старте приложения
-	6. ограничение положения целей размерами карты
+App based on React Native. Now available to tests only Android version.
+So, you can try to use it. But you should change coords of targets to yours, becouse I use coords of objects near to my apartments.
+Also I have idea to use Augments Reality for targets. But I think that I will do it only in new version, after release.
 
-	7. анимация карты
-	8. захват цели и унижчтожение цели
+(MVP stage)
+<pre>
+	1. show current user coords
+	2. circle of radar
+	3. show users arrow at center of rarars circle
+	4. words of world sides
+	5. generate pseudo targets around user on start
+	6. limit position of targets on circle by them border
 
-	8. обдумать экраны приложения
+*	7. animate targets and radar
+	8. destroy target when you on it
+
+	8. to think about screens of app
+</pre>
