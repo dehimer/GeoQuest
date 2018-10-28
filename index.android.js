@@ -13,7 +13,7 @@ import {
 } from 'react-native';
 
 import Dimensions from 'Dimensions';
-const {height, width} = Dimensions.get('window');
+const { height, width } = Dimensions.get('window');
 const radarPadding = width/10/2;
 const radarDiameter = width-radarPadding*2;
 const radarBorderWidth = 5;
@@ -21,34 +21,33 @@ const userPointDiameter = radarDiameter/20;
 const targetDiameter = userPointDiameter;
 
 class GeoQuest extends Component {
-
   constructor(props) {
     super(props);
     this.state = {
       lastPosition: {},
       scale: 500000,
       targets: [
-        //home
+        // home
         {
           latitude: 56.132374,
           longitude: 47.260439
         },
-        //transform
+        // transformer
         {
           latitude: 56.133569,
           longitude: 47.258969
         },
-        //corner of next building
+        // corner of next building
         {
           latitude: 56.131594,
           longitude: 47.262527
         },
-        //near to kindergarden
+        // near to kindergarden
         {
           latitude: 56.131426,
           longitude: 47.258643
         },
-        //bayarea
+        // bayarea
         {
           latitude: 56.146603,
           longitude: 47.253530
@@ -75,24 +74,17 @@ class GeoQuest extends Component {
   componentDidMount() {
     this.watchID = navigator.geolocation.watchPosition(
       (position) => {
-        this.setState((prevState)=>{
-          let newState = {lastPosition: position, gpsProblem:false}
-          console.log(position);
-          // if(!prevState.lastPosition.coords){
-          //   newState.targets = this.generateTargets(position.coords);
-          // }
-          return newState;
-        });
+        this.setState({ lastPosition: position, gpsProblem: false });
       },
-      (error) => {
-        this.setState({gpsProblem:true})
+      () => {
+        this.setState({ gpsProblem: true })
       },
       {
         enableHighAccuracy: true,
-        distanceFilter: 0, //need to try less value
-        // desiredAccuracy: 1,  
-        timeout: 1000, //show question on the center
-        maximumAge: 100 //need to try less value
+        distanceFilter: 0, // TODO: need to try less value
+        // desiredAccuracy: 1,
+        timeout: 1000, // show question on the center
+        maximumAge: 100 // TODO: need to try less value
       }
     );
   }
@@ -102,20 +94,23 @@ class GeoQuest extends Component {
   }
 
   render() {
-    const {coords={heading: 0, latitude:0, longitude:0}, timestamp} = this.state.lastPosition;
+    const {
+      coords = { heading: 0, latitude: 0, longitude: 0 },
+      timestamp
+    } = this.state.lastPosition;
     // coords.heading = 0;
     // coords.latitude = 56.132374;
     // coords.longitude = 47.260439;
     let timeInfo;
     if(timestamp){
-      const date = `Date: ${(new Date(timestamp))}`
+      const date = `Date: ${(new Date(timestamp))}`;
       timeInfo = (<Text>{ date }</Text>);
-    }else{
+    } else {
       timeInfo = (<Text>No date</Text>);
     }
 
     let currentInfo;
-    if(coords){
+    if(coords) {
       currentInfo = Object.keys(coords).map(name => (
         <Text key={name}>{name}: {coords[name]}</Text>
       ))
@@ -124,19 +119,19 @@ class GeoQuest extends Component {
     }
     console.log(this.state);
     const targetsScale = this.state.scale;
-    const rotate = 360-coords.heading;
+    const rotate = 360 - coords.heading;
 
     function getDistanceFromLatLonInKm(lat1, lon1, lat2, lon2) {
-      var R = 6371; // Radius of the earth in km
-      var dLat = deg2rad(lat2-lat1);  // deg2rad below
-      var dLon = deg2rad(lon2-lon1); 
-      var a = 
+      const R = 6371; // Radius of the earth in km
+      const dLat = deg2rad(lat2-lat1);  // deg2rad is defined below
+      const dLon = deg2rad(lon2-lon1);
+      const a =
         Math.sin(dLat/2) * Math.sin(dLat/2) +
-        Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) * 
+        Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) *
         Math.sin(dLon/2) * Math.sin(dLon/2)
-        ; 
-      var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); 
-      var d = R * c; // Distance in km
+        ;
+      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+      const d = R * c; // Distance in km
       return d;
     }
 
@@ -146,26 +141,26 @@ class GeoQuest extends Component {
 
     return (
       <View>
-        <View style={styles.container}></View>
-        <View style={[styles.radarwrapper, {transform:[{rotate: `${rotate}deg`}]}]}>
-          <View style={[styles.radar, {opacity:this.state.gpsProblem?0.1:1}]}>
+        <View style={styles.container}/>
+        <View style={[styles.radarwrapper, { transform: [{rotate: `${rotate}deg`}]}]}>
+          <View style={[styles.radar, { opacity: this.state.gpsProblem ? 0.1 : 1} ]}>
             {
               this.state.targets.map((target, index) => {
 
                 let targetPos = {
                   top:  ((radarDiameter/180.0) * (90 - target.latitude)),
                   left:  ((radarDiameter/360.0) * (180 + target.longitude))
-                }
+                };
 
                 let centerPos = {
                   top:  ((radarDiameter/180.0) * (90 - coords.latitude)),
                   left:  ((radarDiameter/360.0) * (180 + coords.longitude))
-                }
+                };
 
                 let targetVector = {
                   top: (targetPos.top-centerPos.top)*targetsScale,
                   left: (targetPos.left-centerPos.left)*targetsScale,
-                }
+                };
                 // targetVector.top =  ((radarDiameter/180.0) * (90 - target.latitude));
                 // targetVector.left =  ((radarDiameter/360.0) * (180 + target.longitude));
                 console.log(targetVector);
@@ -181,7 +176,7 @@ class GeoQuest extends Component {
                 let targetStyle = {
                   top: targetVector.top+radarRadius-targetDiameter/2-radarBorderWidth,
                   left: targetVector.left+radarRadius-targetDiameter/2-radarBorderWidth,
-                }
+                };
 
                 return (<View key={index} style={[styles.target, targetStyle, {transform:[{rotate: `-${rotate}deg`}]}]}>
                   <Text style={{fontSize: targetDiameter/2}}>{index}: {dist}</Text>
@@ -194,7 +189,7 @@ class GeoQuest extends Component {
           <Text style={[styles.corner, styles.westCorner, {transform:[{rotate: `-${rotate}deg`}]}]}>W</Text>
           <Text style={[styles.corner, styles.eastCorner, {transform:[{rotate: `-${rotate}deg`}]}]}>E</Text>
         </View>
-        <View style={styles.userPoint}></View>
+        <View style={styles.userPoint}/>
         <View style={styles.info}>
           <View>
             { timeInfo }
